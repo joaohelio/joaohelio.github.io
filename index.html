@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Capacity Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            padding: 40px;
+        }
+
+        .input-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .results-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1f2937;
+            border-bottom: 3px solid #4f46e5;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            background: white;
+        }
+
+        .form-group small {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border: 1px solid #0284c7;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(2, 132, 199, 0.15);
+        }
+
+        .result-card h3 {
+            color: #0c4a6e;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .result-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 8px;
+        }
+
+        .result-description {
+            color: #475569;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .assumptions {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .assumptions h3 {
+            color: #92400e;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .assumptions ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .assumptions li {
+            color: #78350f;
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .assumptions li:before {
+            content: "•";
+            color: #f59e0b;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+        }
+
+        .error {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 5px;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a78bfa 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>System Capacity Calculator</h1>
+            <p>Estimate your system's infrastructure requirements based on user load and usage patterns</p>
+        </div>
+
+        <div class="content">
+            <div class="input-section">
+                <h2 class="section-title">Input Parameters</h2>
+                
+                <div class="form-group">
+                    <label for="dau">Daily Active Users (DAU)</label>
+                    <input type="number" id="dau" placeholder="e.g., 100000" min="1">
+                    <small>Number of unique users active per day</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="mau">Monthly Active Users (MAU)</label>
+                    <input type="number" id="mau" placeholder="e.g., 500000" min="1">
+                    <small>Number of unique users active per month</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="avgSessions">Average Sessions per User per Day</label>
+                    <input type="number" id="avgSessions" value="3" min="0.1" step="0.1">
+                    <small>How many times a user interacts with your system daily</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="avgRequests">Average Requests per Session</label>
+                    <input type="number" id="avgRequests" value="20" min="1">
+                    <small>API calls, page loads, etc. per user session</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="avgDataPerUser">Average Data per User (MB)</label>
+                    <input type="number" id="avgDataPerUser" value="10" min="0.1" step="0.1">
+                    <small>Storage required per user (profiles, content, etc.)</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="avgResponseSize">Average Response Size (KB)</label>
+                    <input type="number" id="avgResponseSize" value="50" min="0.1" step="0.1">
+                    <small>Average size of server responses</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="cacheHitRate">Cache Hit Rate (%)</label>
+                    <input type="number" id="cacheHitRate" value="80" min="0" max="100">
+                    <small>Percentage of requests served from cache</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="peakMultiplier">Peak Traffic Multiplier</label>
+                    <input type="number" id="peakMultiplier" value="3" min="1" step="0.1">
+                    <small>Peak traffic as multiple of average (e.g., 3x)</small>
+                </div>
+
+                <button class="calculate-btn" onclick="calculateCapacity()">
+                    Calculate Capacity Requirements
+                </button>
+            </div>
+
+            <div class="results-section">
+                <h2 class="section-title">Capacity Estimates</h2>
+                <div id="results">
+                    <p style="text-align: center; color: #6b7280; font-style: italic; margin-top: 50px;">
+                        Enter your parameters and click "Calculate" to see capacity estimates
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="assumptions">
+            <h3>Key Assumptions & Notes</h3>
+            <ul>
+                <li>Calculations include 20% safety margin for unexpected load</li>
+                <li>Storage estimates include replication and backup overhead</li>
+                <li>Bandwidth calculations assume 70% efficiency due to protocol overhead</li>
+                <li>Peak traffic multiplier helps size for traffic spikes</li>
+                <li>Cache calculations assume typical web application patterns</li>
+                <li>Database queries estimated at 2-3x API requests due to complex operations</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function calculateCapacity() {
+            // Get input values
+            const dau = parseFloat(document.getElementById('dau').value) || 0;
+            const mau = parseFloat(document.getElementById('mau').value) || 0;
+            const avgSessions = parseFloat(document.getElementById('avgSessions').value) || 3;
+            const avgRequests = parseFloat(document.getElementById('avgRequests').value) || 20;
+            const avgDataPerUser = parseFloat(document.getElementById('avgDataPerUser').value) || 10;
+            const avgResponseSize = parseFloat(document.getElementById('avgResponseSize').value) || 50;
+            const cacheHitRate = parseFloat(document.getElementById('cacheHitRate').value) || 80;
+            const peakMultiplier = parseFloat(document.getElementById('peakMultiplier').value) || 3;
+
+            // Validation
+            if (dau <= 0 || mau <= 0 || dau > mau) {
+                document.getElementById('results').innerHTML = `
+                    <div class="error">
+                        <p>Please ensure DAU and MAU are positive numbers and DAU ≤ MAU</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Calculate throughput
+            const dailyRequests = dau * avgSessions * avgRequests;
+            const peakRPS = Math.ceil((dailyRequests * peakMultiplier) / (24 * 3600));
+            const avgRPS = Math.ceil(dailyRequests / (24 * 3600));
+            const dbQPS = Math.ceil(peakRPS * 2.5); // Database queries typically 2-3x API requests
+
+            // Calculate storage
+            const totalUserStorage = mau * avgDataPerUser; // MB
+            const storageWithReplication = totalUserStorage * 3; // 3x for replication
+            const storageWithBackup = storageWithReplication * 1.5; // 1.5x for backups
+            const totalStorageGB = Math.ceil(storageWithBackup / 1024);
+
+            // Calculate cache requirements
+            const activeCacheSize = (dau * avgDataPerUser * 0.3) / 1024; // 30% of active users' data
+            const cacheStorageGB = Math.ceil(activeCacheSize * 1.2); // 20% overhead
+
+            // Calculate bandwidth
+            const dailyDataTransfer = dailyRequests * (avgResponseSize / 1024); // MB
+            const peakBandwidthMbps = Math.ceil((dailyDataTransfer * peakMultiplier * 8) / (24 * 3600 * 0.7)); // 70% efficiency
+            const avgBandwidthMbps = Math.ceil((dailyDataTransfer * 8) / (24 * 3600 * 0.7));
+
+            // Cache-adjusted calculations
+            const effectiveRPS = Math.ceil(peakRPS * (1 - cacheHitRate / 100));
+            const effectiveBandwidth = Math.ceil(peakBandwidthMbps * (1 - cacheHitRate / 100));
+
+            // Calculate additional metrics
+            const concurrentUsers = Math.ceil(dau * 0.15); // Estimate 15% concurrent
+            const safetyMargin = 1.2; // 20% safety margin
+
+            // Display results
+            const resultsHTML = `
+                <div class="result-card">
+                    <h3>🔥 Peak Throughput</h3>
+                    <div class="result-value">${Math.ceil(peakRPS * safetyMargin).toLocaleString()} RPS</div>
+                    <div class="result-description">
+                        Peak requests per second (avg: ${avgRPS.toLocaleString()} RPS)<br>
+                        Database queries: ${Math.ceil(dbQPS * safetyMargin).toLocaleString()} QPS<br>
+                        After cache: ${Math.ceil(effectiveRPS * safetyMargin).toLocaleString()} RPS to backend
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <h3>💾 Storage Requirements</h3>
+                    <div class="result-value">${Math.ceil(totalStorageGB * safetyMargin).toLocaleString()} GB</div>
+                    <div class="result-description">
+                        User data: ${Math.ceil(totalUserStorage / 1024)} GB<br>
+                        With replication: ${Math.ceil(storageWithReplication / 1024)} GB<br>
+                        With backups: ${totalStorageGB.toLocaleString()} GB
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <h3>⚡ Cache Requirements</h3>
+                    <div class="result-value">${Math.ceil(cacheStorageGB * safetyMargin)} GB</div>
+                    <div class="result-description">
+                        Memory cache for ${cacheHitRate}% hit rate<br>
+                        Reduces backend load by ${cacheHitRate}%<br>
+                        Estimated concurrent users: ${concurrentUsers.toLocaleString()}
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <h3>🌐 Network Bandwidth</h3>
+                    <div class="result-value">${Math.ceil(peakBandwidthMbps * safetyMargin)} Mbps</div>
+                    <div class="result-description">
+                        Peak bandwidth required (avg: ${avgBandwidthMbps} Mbps)<br>
+                        After cache optimization: ${Math.ceil(effectiveBandwidth * safetyMargin)} Mbps<br>
+                        Daily data transfer: ${Math.ceil(dailyDataTransfer / 1024)} GB
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <h3>📊 System Summary</h3>
+                    <div class="result-value">${Math.ceil(dau / mau * 100)}% DAU/MAU</div>
+                    <div class="result-description">
+                        User engagement ratio<br>
+                        ${(avgSessions * avgRequests).toLocaleString()} requests/user/day<br>
+                        Peak multiplier: ${peakMultiplier}x average load
+                    </div>
+                </div>
+
+                <div style="background: #f0fdf4; border: 1px solid #16a34a; border-radius: 10px; padding: 15px; margin-top: 20px;">
+                    <h4 style="color: #15803d; margin-bottom: 10px;">💡 Recommendations:</h4>
+                    <ul style="list-style: none; padding: 0; color: #166534;">
+                        <li style="margin-bottom: 5px;">• Consider horizontal scaling for ${peakRPS > 1000 ? 'high' : 'moderate'} RPS requirements</li>
+                        <li style="margin-bottom: 5px;">• Implement CDN for static content to reduce bandwidth costs</li>
+                        <li style="margin-bottom: 5px;">• Use database sharding for ${totalStorageGB > 1000 ? 'large' : 'moderate'} storage requirements</li>
+                        <li>• Monitor cache hit rates to optimize performance</li>
+                    </ul>
+                </div>
+            `;
+
+            document.getElementById('results').innerHTML = resultsHTML;
+        }
+
+        // Auto-calculate when inputs change
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    // Debounce auto-calculation
+                    clearTimeout(this.timeout);
+                    this.timeout = setTimeout(() => {
+                        const dau = parseFloat(document.getElementById('dau').value);
+                        const mau = parseFloat(document.getElementById('mau').value);
+                        if (dau > 0 && mau > 0) {
+                            calculateCapacity();
+                        }
+                    }, 500);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
